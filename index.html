@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced Video Browser</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Menu Overlay -->
+    <div id="menuOverlay" class="menu-overlay"></div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="dropOverlay" class="drop-overlay">
+      <div class="drop-content">
+        <svg
+          width="80"
+          height="80"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path
+            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <h2>Drop Videos Here</h2>
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="header-top">
+        <div class="header-left">
+          <h1>🎬 Video Browser Pro</h1>
+          <div class="stats-bar">
+            <span id="videoCount">0 videos</span>
+            <span id="totalSize">0 MB</span>
+            <span id="totalDuration">0:00</span>
+            <span
+              id="playlistIndicator"
+              style="display: none"
+              class="playlist-indicator"
+            ></span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="search-container">
+            <input
+              type="search"
+              id="search"
+              placeholder="🔍 Search videos..."
+            />
+          </div>
+          <button id="selectFolder" class="btn-primary" title="Select Folder">
+            <svg style="width: 20px; height: 20px" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M9.16 3L5.95 6.25 4.72 5 3 6.72l1.25 1.25L3 9.16l1.41 1.41 1.25-1.25 1.25 1.25 1.41-1.41L7.66 7.89l1.25-1.25L9.16 3M20 6h-8l-2-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m0 12H4V8h16v10Z"
+              />
+            </svg>
+            <span>Open Folder</span>
+          </button>
+          <button id="menuToggle" class="menu-toggle" title="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="controls" id="controlsMenu">
+        <div class="control-group filters-group">
+          <label class="control-label">Sort & Filter</label>
+          <div class="control-row">
+            <select id="sort" class="select-primary">
+              <option value="name">📝 Name</option>
+              <option value="date">📅 Date</option>
+              <option value="size">📦 Size</option>
+              <option value="duration">⏱️ Duration</option>
+            </select>
+            <select id="formatFilter" class="select-secondary">
+              <option value="all">All Formats</option>
+              <option value="mp4">MP4</option>
+              <option value="mov">MOV</option>
+              <option value="avi">AVI</option>
+              <option value="mkv">MKV</option>
+              <option value="webm">WebM</option>
+            </select>
+            <select id="qualityFilter" class="select-secondary">
+              <option value="all">All Quality</option>
+              <option value="4k">4K Ultra HD</option>
+              <option value="1080p">Full HD</option>
+              <option value="720p">HD</option>
+              <option value="sd">SD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group view-group">
+          <label class="control-label">View</label>
+          <div class="control-row">
+            <button id="themeToggle" class="btn-round" title="Toggle Theme">
+              🌓
+            </button>
+            <button id="viewToggle" class="btn-round" title="Toggle View">
+              ◼︎
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group actions-group">
+          <label class="control-label">Actions</label>
+          <div class="control-row">
+            <button id="compareBtn" class="btn-icon" title="Compare Videos">
+              <span class="btn-emoji">🔄</span>
+              <span class="btn-text">Compare</span>
+            </button>
+            <button id="batchBtn" class="btn-icon" title="Batch Operations">
+              <span class="btn-emoji">☑️</span>
+              <span class="btn-text">Batch</span>
+            </button>
+            <button
+              id="favoritesToggle"
+              class="btn-icon"
+              title="Show Favorites"
+            >
+              <span class="btn-emoji">⭐</span>
+              <span class="btn-text">Favorites</span>
+            </button>
+            <button id="playlistBtn" class="btn-icon" title="Manage Playlists">
+              <span class="btn-emoji">📋</span>
+              <span class="btn-text">Playlists</span>
+            </button>
+            <button id="exportBtn" class="btn-icon" title="Export Data">
+              <span class="btn-emoji">💾</span>
+              <span class="btn-text">Export</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Batch Operations Bar -->
+    <div id="batchBar" class="batch-bar" style="display: none">
+      <div class="batch-info">
+        <span id="selectedCount">0 selected</span>
+      </div>
+      <div class="batch-actions">
+        <button id="batchSelectAll">Select All</button>
+        <button id="batchDeselectAll">Deselect All</button>
+        <button id="batchAddToFavorites">⭐ Add to Favorites</button>
+        <button id="batchRemoveFromFavorites">Remove from Favorites</button>
+        <button id="batchAddTags">🏷️ Add Tags</button>
+        <button id="batchDelete">🗑️ Delete Selected</button>
+        <button id="batchCancel">✖ Cancel</button>
+      </div>
+    </div>
+
+    <div id="videoContainer"></div>
+
+    <!-- Loading overlay -->
+    <div id="loading">
+      <div class="loader"></div>
+      <p>Processing videos...</p>
+    </div>
+
+    <!-- Playlist Modal -->
+    <div id="playlistModal" class="modal">
+      <div class="modal-content playlist-modal">
+        <span class="close">&times;</span>
+        <h2>📋 Playlist Manager</h2>
+        <div class="playlist-controls">
+          <input type="text" id="playlistName" placeholder="Playlist name..." />
+          <button id="createPlaylist">Create Playlist</button>
+          <button id="savePlaylist">Save Current</button>
+        </div>
+        <div id="playlistList"></div>
+      </div>
+    </div>
+
+    <!-- Compare Modal -->
+    <div id="compareModal" class="modal">
+      <div class="modal-content compare-modal">
+        <span class="close">&times;</span>
+        <h2>🔄 Compare Videos</h2>
+        <div class="compare-container">
+          <div class="compare-video">
+            <h3>Video 1</h3>
+            <select id="compareVideo1">
+              <option value="">Select video...</option>
+            </select>
+            <video id="comparePlayer1" controls></video>
+            <div id="compareInfo1" class="compare-info"></div>
+          </div>
+          <div class="compare-video">
+            <h3>Video 2</h3>
+            <select id="compareVideo2">
+              <option value="">Select video...</option>
+            </select>
+            <video id="comparePlayer2" controls></video>
+            <div id="compareInfo2" class="compare-info"></div>
+          </div>
+        </div>
+        <div class="compare-sync">
+          <label
+            ><input type="checkbox" id="syncPlayback" /> Sync Playback</label
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Modal -->
+    <div id="tagsModal" class="modal">
+      <div class="modal-content tags-modal">
+        <span class="close">&times;</span>
+        <h2>🏷️ Manage Tags</h2>
+        <div class="tags-input">
+          <input
+            type="text"
+            id="tagInput"
+            placeholder="Add tags (comma-separated)..."
+          />
+          <button id="addTagsBtn">Add Tags</button>
+        </div>
+        <div class="popular-tags">
+          <h4>Popular Tags:</h4>
+          <div id="popularTagsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export/Import Modal -->
+    <div id="exportModal" class="modal">
+      <div class="modal-content export-modal">
+        <span class="close">&times;</span>
+        <h2>💾 Export/Import Data</h2>
+        <div class="export-section">
+          <h3>Export</h3>
+          <button id="exportFavorites">Export Favorites</button>
+          <button id="exportPlaylists">Export Playlists</button>
+          <button id="exportTags">Export Tags</button>
+          <button id="exportAll">Export All Data</button>
+        </div>
+        <div class="import-section">
+          <h3>Import</h3>
+          <input type="file" id="importFile" accept=".json" />
+          <button id="importData">Import Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for playing videos -->
+    <div id="videoModal" class="modal">
+      <div class="modal-content video-modal">
+        <span class="close">&times;</span>
+        <div class="video-player-wrapper">
+          <video id="mainVideoPlayer" controls autoplay></video>
+          <div class="video-controls-overlay">
+            <div class="video-title-bar">
+              <h3 id="currentVideoTitle">Video Title</h3>
+              <div class="video-actions">
+                <button id="pipBtn" title="Picture-in-Picture">📺</button>
+                <button id="speedBtn" title="Playback Speed">1x</button>
+                <button id="favoriteBtn" title="Add to Favorites">⭐</button>
+                <button id="tagsBtn" title="Manage Tags">🏷️</button>
+                <button id="loopBtn" title="Loop Video">🔁</button>
+                <button id="snapshotBtn" title="Take Snapshot">📸</button>
+                <button id="fullscreenBtn" title="Fullscreen">⛶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div id="shortcutsHelp" class="shortcuts-help">
+      <button id="toggleShortcuts" title="Keyboard Shortcuts">⌨️</button>
+      <div class="shortcuts-content">
+        <h4>Keyboard Shortcuts</h4>
+        <ul>
+          <li><kbd>Space</kbd> - Play/Pause</li>
+          <li><kbd>F</kbd> - Fullscreen</li>
+          <li><kbd>P</kbd> - Picture-in-Picture</li>
+          <li><kbd>←/→</kbd> - Seek ±5s</li>
+          <li><kbd>↑/↓</kbd> - Volume ±10%</li>
+          <li><kbd>Esc</kbd> - Close Player</li>
+          <li><kbd>Ctrl+F</kbd> - Search</li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
